@@ -9,7 +9,7 @@ Extracts Windows SAM and SYSTEM files using Volume Shadow Copy Service (VSS) wit
 - Exfiltration methods: Local save or Network transfer
 
 
-It is implemented in C++, C#, and Python, and it works on modern Windows versions. 
+It is implemented in C++, C#, Crystal and Python, and it works on modern Windows versions. 
 
 It requires elevated privileges, and if created the Shadow Copy is automatically deleted after ~5 minutes.
 
@@ -153,3 +153,4 @@ The tool employs NT system calls instead of standard Windows API functions, whic
 ## Acknowledgements
 
 Thanks to [@vx-underground](https://x.com/vxunderground) for identifying and suggesting optimizations in the Export Address Table (EAT) traversal code, replacing unnecessary `NtReadVirtualMemory` calls with direct pointer access.
+
